@@ -32,4 +32,6 @@ public class EdgeDeviceDto implements Serializable {
 
     @ApiModelProperty("设备属性列表")
     private List<EdgeDeviceTwinDto> deviceTwinDtoList;
+
+    private String timestamp;
 }

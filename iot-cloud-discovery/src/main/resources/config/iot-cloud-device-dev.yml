@@ -19,15 +19,15 @@ spring:
       # 主库数据源
       master:
         url: jdbc:mysql://iot-cloud-db-mysql:3306/iot_cloud_device?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: root
-        password: 123456
+        username: ts-mysql
+        password: 022012bupT!
       # 从库数据源
       slave:
         #从数据源开关/默认关闭
         enabled: false
         url: jdbc:mysql://iot-cloud-db-mysql:3306/iot_cloud_read_device?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: root
-        password: 123456
+        username: ts-mysql
+        password: 022012bupT!
       # 初始连接数
       initialSize: 5
       # 最小连接池数量

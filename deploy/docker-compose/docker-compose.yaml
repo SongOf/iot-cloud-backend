@@ -1,0 +1,9 @@
+version: '3'
+services:
+  # basic services
+  mysql:
+    environment:
+      - MYSQL_ROOT_PASSWORD=songof123
+      - MYSQL_USER=test
+      - MYSQL_PASS=password
+    image: 

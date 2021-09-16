@@ -21,4 +21,6 @@ public class EdgeDeviceTwinDto implements Serializable {
     private String reportedValue;
 
     private String reportedTime;
+
+    private String timestamp;
 }
