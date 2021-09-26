@@ -6,4 +6,100 @@ services:
       - MYSQL_ROOT_PASSWORD=songof123
       - MYSQL_USER=test
       - MYSQL_PASS=password
-    image: 
+    image: 82.156.191.186:9670/library/mysql:5.7
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/db:/var/lib/mysql
+      - ./mysql/conf/my.cnf:/etc/my.cnf
+      - ../../scripts/sql/release:/docker-entrypoint-initdb.d
+  redis:
+    image: 82.156.191.186:9670/library/redis:6.2.2
+    command: redis-server --requirepass songof123
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+  rabbitmq:
+    image: 82.156.191.186:9670/library/rabbitmq-3.8.9-management:3.8.9
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=123123
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+  zookeeper:
+    image: 82.156.191.186:9670/library/zookeeper:3.4.14
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888
+#  zoo1:
+#    image: zookeeper:3.4.14
+#    restart: always
+#    container_name: zoo1
+#    ports:
+#      - "2181:2181"
+#    environment:
+#      ZOO_MY_ID: 1
+#      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+#    zoo2:
+#      image: zookeeper:3.4.14
+#      restart: always
+#      container_name: zoo2
+#      ports:
+#        - "2182:2181"
+#      environment:
+#        ZOO_MY_ID: 2
+#        ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+#    zoo3:
+#      image: zookeeper:3.4.14
+#      restart: always
+#      container_name: zoo3
+#      ports:
+#        - "2183:2181"
+#      environment:
+#        ZOO_MY_ID: 3
+#        ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=zoo2:2888:3888 server.3=zoo3:2888:3888
+  rmqnamesrv:
+    image: 82.156.191.186:9670/library/rocketmq:server
+    ports:
+      - "9876:9876"
+    volumes:
+      - ./rocketmq/data/namesrv/logs:/opt/logs
+      - ./rocketmq/data/namesrv/store:/opt/store
+    command: sh mqnamesrv
+  rmqbroker:
+    image: 82.156.191.186:9670/library/rocketmq:broker
+    links:
+      - rmqnamesrv
+    ports:
+      - "10909:10909"
+      - "10910:10910"
+      - "10911:10911"
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+    volumes:
+      - ./rocketmq/data/broker/logs:/opt/logs
+      - ./rocketmq/data/broker/store:/opt/store
+      - ./rocketmq/conf/broker.conf:/opt/rocketmq-4.5.0/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.5.0/conf/broker.conf
+    depends_on:
+      - rmqnamesrv
+  rmqconsole:
+    image: 82.156.191.186:9670/library/rocketmq:console
+    links:
+      - rmqnamesrv
+    ports:
+      - "8180:8080"
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rmqnamesrv

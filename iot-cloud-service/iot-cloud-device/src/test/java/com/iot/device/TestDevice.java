@@ -1,6 +1,7 @@
 package com.iot.device;
 
 import com.alibaba.fastjson.JSONArray;
+import com.iot.AbstractTest;
 import com.iot.device.dto.EdgeDeviceDto;
 import com.iot.device.dto.EdgeDeviceTwinDto;
 import com.iot.device.service.DeviceService;

@@ -15,6 +15,9 @@ import java.util.List;
 public class EdgeDeviceDto implements Serializable {
 
     private static final long serialVersionUID = 2619278405554102852L;
+    @ApiModelProperty("名称空间")
+    private String namespace;
+
     @ApiModelProperty("设备名称")
     private String deviceName;
 

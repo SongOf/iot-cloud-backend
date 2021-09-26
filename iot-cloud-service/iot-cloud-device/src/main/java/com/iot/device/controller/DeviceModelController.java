@@ -1,6 +1,6 @@
 package com.iot.device.controller;
 
-
+import com.iot.common.core.domain.R;
 import com.iot.device.dto.EdgeDeviceModelDto;
 import com.iot.device.service.DeviceModelService;
 import io.swagger.annotations.Api;
@@ -23,13 +23,13 @@ public class DeviceModelController {
 
     @PostMapping("addDeviceModel")
     @ApiOperation("创建设备模型")
-    public void addDeviceModel(@RequestBody EdgeDeviceModelDto deviceModelDto){
-        deviceModelService.createDeviceModel(deviceModelDto);
+    public R addDeviceModel(@RequestBody EdgeDeviceModelDto deviceModelDto) {
+        return R.data(deviceModelService.createDeviceModel(deviceModelDto));
     }
 
     @GetMapping("getAllEdgeDeviceModel")
     @ApiOperation("获取全部设备模型")
-    public List<EdgeDeviceModelDto> getAllEdgeDeviceModel() {
-        return deviceModelService.getAllDeviceModel();
+    public R getAllEdgeDeviceModel() {
+        return R.data(deviceModelService.getAllDeviceModel());
     }
 }

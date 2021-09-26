@@ -1,7 +1,5 @@
 package com.iot.device.model.crd.deviceModel;
 
-
-
 import com.iot.device.model.crd.modelType.ModelType;
 import lombok.Data;
 

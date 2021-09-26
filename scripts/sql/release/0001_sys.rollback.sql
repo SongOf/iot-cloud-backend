@@ -1,0 +1,24 @@
+USE iot_cloud_sys;
+SET NAMES UTF8;
+
+DROP TABLE IF EXISTS `sys_user_role`;
+DROP TABLE IF EXISTS `sys_company`;
+DROP TABLE IF EXISTS `sys_config`;
+DROP TABLE IF EXISTS `sys_dept`;
+DROP TABLE IF EXISTS `sys_dict_data`;
+DROP TABLE IF EXISTS `sys_dict_type`;
+DROP TABLE IF EXISTS `sys_job`;
+DROP TABLE IF EXISTS `sys_job_log`;
+DROP TABLE IF EXISTS `sys_logininfor`;
+DROP TABLE IF EXISTS `sys_menu`;
+DROP TABLE IF EXISTS `sys_notice`;
+DROP TABLE IF EXISTS `sys_oper_log`;
+DROP TABLE IF EXISTS `sys_oss`;
+DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `sys_user_post`;
+DROP TABLE IF EXISTS `sys_user_online`;
+DROP TABLE IF EXISTS `sys_user`;
+DROP TABLE IF EXISTS `sys_role_menu`;
+DROP TABLE IF EXISTS `sys_role_dept`;
+DROP TABLE IF EXISTS `sys_role`;
+DROP TABLE IF EXISTS `sys_post`;

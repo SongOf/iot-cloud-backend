@@ -1,8 +1,7 @@
 package com.iot.device.controller;
 
-
-
 import com.iot.common.core.controller.BaseController;
+import com.iot.common.core.domain.R;
 import com.iot.device.dto.BindEdgeDeviceDto;
 import com.iot.device.dto.EdgeDeviceDto;
 import com.iot.device.model.crd.device.EdgeDevice;
@@ -28,14 +27,14 @@ public class DeviceController extends BaseController {
 
     @PostMapping("addDevice")
     @ApiOperation("创建设备")
-    public void addEdgeDevice(@RequestBody EdgeDeviceDto deviceDto) {
-        deviceService.createDevice(deviceDto);
+    public R addEdgeDevice(@RequestBody EdgeDeviceDto deviceDto) {
+        return R.data(deviceService.createDevice(deviceDto));
     }
 
     @GetMapping("getAllEdgeDevice")
     @ApiOperation( "获取全部设备")
-    public List<EdgeDeviceDto> getAllDevice() {
-        return deviceService.getAllDevice();
+    public R getAllDevice() {
+        return R.data(deviceService.getAllDevice());
     }
 
     @GetMapping("getDevice/{deviceName}")

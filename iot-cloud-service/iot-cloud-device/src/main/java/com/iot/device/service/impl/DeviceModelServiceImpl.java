@@ -1,6 +1,8 @@
 package com.iot.device.service.impl;
 
-
+import com.iot.common.exception.BusinessException;
+import com.iot.common.redis.aspect.RedisAspect;
+import com.iot.device.constant.ExceptionMsg;
 import com.iot.device.dto.DeviceModelPropertyDto;
 import com.iot.device.dto.EdgeDeviceModelDto;
 import com.iot.device.model.crd.deviceModel.*;
@@ -10,9 +12,13 @@ import com.iot.device.model.crd.modelType.ModelType;
 import com.iot.device.model.crd.modelType.StringType;
 import com.iot.device.service.DeviceModelService;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.client.CustomResourceList;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +30,18 @@ import java.util.List;
  */
 @Service
 public class DeviceModelServiceImpl implements DeviceModelService {
+    private final static Logger logger = LoggerFactory.getLogger(DeviceModelServiceImpl.class);
+
     @Autowired
     private NonNamespaceOperation<EdgeDeviceModel, DeviceModelList, DoneableDeviceModel, Resource<EdgeDeviceModel, DoneableDeviceModel>> deviceModelClient;
 
     @Override
-    public void createDeviceModel(EdgeDeviceModelDto deviceModelDto) {
+    public CustomResource createDeviceModel(EdgeDeviceModelDto deviceModelDto) {
         try {
             EdgeDeviceModel deviceModel=new EdgeDeviceModel();
             ObjectMeta objectMeta=new ObjectMeta();
             objectMeta.setName(deviceModelDto.getName());
-            objectMeta.setNamespace("default");
+            objectMeta.setNamespace(deviceModelDto.getNamespace());
             deviceModel.setApiVersion("devices.kubeedge.io/v1alpha1");
             deviceModel.setMetadata(objectMeta);
             deviceModel.setKind("DeviceModel");
@@ -69,10 +77,10 @@ public class DeviceModelServiceImpl implements DeviceModelService {
             }
             modelSpec.setProperties(modelProperties);
             deviceModel.setSpec(modelSpec);
-            deviceModelClient.createOrReplace(deviceModel);
+            return deviceModelClient.createOrReplace(deviceModel);
         }catch (Exception e){
-            e.printStackTrace();
-            System.out.println("创建设备模型失败");
+            logger.error(ExceptionMsg.CREATEDEVICEMODELFAIL, e);
+            throw new BusinessException(ExceptionMsg.CREATEDEVICEMODELFAIL, e);
         }
     }
 
@@ -108,8 +116,11 @@ public class DeviceModelServiceImpl implements DeviceModelService {
                 }
                 propertyDtos.add(propertyDto);
             }
-            if(deviceModel.getMetadata()!=null)
-            deviceModelDto.setName(deviceModel.getMetadata().getName());
+            ObjectMeta objectMeta = deviceModel.getMetadata();
+            if(objectMeta!=null) {
+                deviceModelDto.setNamespace(objectMeta.getNamespace());
+                deviceModelDto.setName(objectMeta.getName());
+            }
             deviceModelDto.setPropertyDtos(propertyDtos);
             deviceModelDtos.add(deviceModelDto);
         }

@@ -1,7 +1,7 @@
 package com.iot.device.service;
 
-
 import com.iot.device.dto.EdgeDeviceModelDto;
+import io.fabric8.kubernetes.client.CustomResource;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * Created by huqiaoqian on 2020/10/16
  */
 public interface DeviceModelService {
-    public void createDeviceModel(EdgeDeviceModelDto deviceModelDto);
+    public CustomResource createDeviceModel(EdgeDeviceModelDto deviceModelDto);
 
     public List<EdgeDeviceModelDto> getAllDeviceModel();
 }

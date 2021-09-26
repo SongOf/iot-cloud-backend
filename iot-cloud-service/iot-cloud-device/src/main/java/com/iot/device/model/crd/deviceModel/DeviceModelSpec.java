@@ -11,9 +11,7 @@ import java.util.List;
  * Created by huqiaoqian on 2020/10/15
  */
 @Data
-@JsonDeserialize(
-        using = JsonDeserializer.None.class
-)
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class DeviceModelSpec implements KubernetesResource {
     private static final long serialVersionUID = 8390893355606949277L;
     private List<DeviceModelProperty> properties;

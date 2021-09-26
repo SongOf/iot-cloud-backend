@@ -14,6 +14,8 @@ import java.util.List;
 @ApiModel
 public class EdgeDeviceModelDto implements Serializable {
     private static final long serialVersionUID = 3389016370326455681L;
+    @ApiModelProperty("名称空间")
+    private String namespace;
     @ApiModelProperty("设备模型名称")
     private String name;
     @ApiModelProperty("设备模型属性")

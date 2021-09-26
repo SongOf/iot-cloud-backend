@@ -1,13 +1,11 @@
 package com.iot.device.service.impl;
 
-
 import com.alibaba.fastjson.JSON;
 import com.iot.common.core.dto.LoginAuthDto;
 import com.iot.common.exception.BusinessException;
-import com.iot.common.json.JSONObject;
 import com.iot.common.utils.bean.UpdateInfoUtil;
+import com.iot.device.constant.ExceptionMsg;
 import com.iot.device.dto.BindEdgeDeviceDto;
-import com.iot.device.dto.DeviceManageDto;
 import com.iot.device.dto.EdgeDeviceDto;
 import com.iot.device.dto.EdgeDeviceTwinDto;
 import com.iot.device.mapper.DeviceManageMapper;
@@ -21,15 +19,16 @@ import io.fabric8.kubernetes.api.model.NodeSelector;
 import io.fabric8.kubernetes.api.model.NodeSelectorRequirement;
 import io.fabric8.kubernetes.api.model.NodeSelectorTerm;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.client.CustomResourceList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.iot.device.controller.DeviceManageController;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +40,7 @@ import java.util.Map;
 @Slf4j
 @Service
 public class DeviceServiceImpl implements DeviceService {
-
+    private final static Logger logger = LoggerFactory.getLogger(DeviceServiceImpl.class);
 
     @Autowired
     private NonNamespaceOperation<EdgeDevice, DeviceList, DoneableDevice, Resource<EdgeDevice, DoneableDevice>> deviceClient;
@@ -55,13 +54,11 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private DeviceManageMapper deviceManageMapper;
 
-
-
     @Override
-    public void createDevice(EdgeDeviceDto deviceDto) {
+    public CustomResource createDevice(EdgeDeviceDto deviceDto) {
         try {
             EdgeDevice device = formatEdgeDevice(deviceDto);
-            deviceClient.createOrReplace(device);
+            CustomResource customResource = deviceClient.createOrReplace(device);
             // 将重建设备数据持久化到数据库
             DeviceManage deviceManage = new DeviceManage();
             deviceManage.setVersion(0L);
@@ -77,10 +74,11 @@ public class DeviceServiceImpl implements DeviceService {
             deviceManage.setDeviceTwins(twins);
             System.out.println("*****" + twins + "*****");
             deviceManageMapper.saveDevice(deviceManage);
+            return customResource;
         }
         catch (Exception e){
-            e.printStackTrace();
-            System.out.println("设备创建失败");
+            logger.error(ExceptionMsg.CREATEDEVICEFAIL);
+            throw new BusinessException(ExceptionMsg.CREATEDEVICEFAIL, e);
         }
     }
 
@@ -233,6 +231,12 @@ public class DeviceServiceImpl implements DeviceService {
             deviceDesired.setMetadata(desiredMetadata);
             deviceDesired.setValue(edgeDeviceTwin.getRequireValue());
             deviceTwin.setDesired(deviceDesired);
+            DeviceReported deviceReported = new DeviceReported();
+            DeviceReportedMetadata deviceReportedMetadata = new DeviceReportedMetadata();
+            deviceReportedMetadata.setType(edgeDeviceTwin.getReportedType());
+            deviceReported.setMetadata(deviceReportedMetadata);
+            deviceReported.setValue(edgeDeviceTwin.getReportedValue());
+            deviceTwin.setReported(deviceReported);
             deviceTwins.add(deviceTwin);
         });
         deviceStatus.setTwins(deviceTwins);
@@ -245,7 +249,8 @@ public class DeviceServiceImpl implements DeviceService {
         map.put("description",deviceDto.getDescription());
         map.put("model",deviceDto.getModel());
         objectMeta.setLabels(map);
-        objectMeta.setNamespace("default");
+        objectMeta.setNamespace(deviceDto.getNamespace());
+
         device.setMetadata(objectMeta);
         return device;
     }

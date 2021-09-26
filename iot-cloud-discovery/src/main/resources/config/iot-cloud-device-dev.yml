@@ -4,7 +4,7 @@ spring:
     database: 1
     host: iot-cloud-db-redis
     port: 6379
-    password:      # 密码（默认为空）
+    password: songof123     # 密码（默认为空）
     timeout: 6000ms  # 连接超时时长（毫秒）
     lettuce:
       pool:
@@ -19,8 +19,8 @@ spring:
       # 主库数据源
       master:
         url: jdbc:mysql://iot-cloud-db-mysql:3306/iot_cloud_device?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: ts-mysql
-        password: 022012bupT!
+        username: root
+        password: songof123
       # 从库数据源
       slave:
         #从数据源开关/默认关闭
@@ -84,7 +84,7 @@ iot-cloud:
     producerGroup: PID_CLOUD_DEVICE
 
   kubernetes:
-    master: iot-cloud-k8s:8080
+    master: apiserver.edgestorage:6443
 
 rocketmq:
   consumer:
