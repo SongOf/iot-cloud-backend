@@ -4,6 +4,5 @@ import com.iot.common.core.dao.BaseMapper;
 import com.iot.device.model.domain.Model;
 import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
 public interface ModelMapper extends BaseMapper<Model> {
 }

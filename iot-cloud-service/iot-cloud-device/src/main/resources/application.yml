@@ -8,3 +8,8 @@ spring:
   devtools:
     restart:
       enabled: true
+
+# MyBatis-Plus
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*Mapper.xml
+  typeAliasesPackage: com.iot
